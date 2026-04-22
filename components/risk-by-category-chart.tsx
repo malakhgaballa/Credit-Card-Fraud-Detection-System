@@ -10,20 +10,32 @@ interface CategoryRisk {
   fraudRate: number;
 }
 
-export function RiskByCategoryChart({ data }: { data: CategoryRisk[] }) {
-  // Mock data if not provided
-  const chartData = data || [
-    { category: 'Groceries', fraudCount: 2, totalCount: 150, fraudRate: 1.3 },
-    { category: 'Online Shopping', fraudCount: 8, totalCount: 120, fraudRate: 6.7 },
-    { category: 'Gas Station', fraudCount: 1, totalCount: 180, fraudRate: 0.6 },
-    { category: 'Wire Transfer', fraudCount: 15, totalCount: 95, fraudRate: 15.8 },
-    { category: 'Travel', fraudCount: 5, totalCount: 60, fraudRate: 8.3 },
-    { category: 'Entertainment', fraudCount: 3, totalCount: 85, fraudRate: 3.5 },
-  ];
+export function RiskByCategoryChart({ data }: { data: any[] | null }) {
+  // Transform incoming data
+  let chartData = [];
+  
+  if (data && Array.isArray(data) && data.length > 0) {
+    chartData = data.map(item => ({
+      category: item.category,
+      risk_score: item.risk_score || 0,
+      fraud_count: item.fraud_count || 0,
+      transactions: item.transactions || 0,
+    }));
+  } else {
+    // Fallback mock data
+    chartData = [
+      { category: 'Retail', risk_score: 12, fraud_count: 8, transactions: 2400 },
+      { category: 'E-commerce', risk_score: 28, fraud_count: 42, transactions: 1800 },
+      { category: 'Travel', risk_score: 35, fraud_count: 28, transactions: 950 },
+      { category: 'Entertainment', risk_score: 18, fraud_count: 15, transactions: 1200 },
+      { category: 'Wire Transfer', risk_score: 52, fraud_count: 85, transactions: 320 },
+      { category: 'Gas/Fuel', risk_score: 8, fraud_count: 5, transactions: 1400 },
+    ];
+  }
 
   return (
     <div className="p-6 rounded-lg border border-border bg-card">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Risk by Merchant Category</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">Risk Score by Category</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -32,19 +44,20 @@ export function RiskByCategoryChart({ data }: { data: CategoryRisk[] }) {
           <Tooltip 
             contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
             labelStyle={{ color: '#111827' }}
+            formatter={(value) => value.toFixed(1)}
           />
           <Legend />
           <Bar 
-            dataKey="fraudCount" 
+            dataKey="risk_score" 
             fill="#ef4444" 
             radius={[8, 8, 0, 0]}
-            name="Fraud Count"
+            name="Risk Score"
           />
           <Bar 
-            dataKey="totalCount" 
-            fill="#3b82f6" 
+            dataKey="fraud_count" 
+            fill="#f97316" 
             radius={[8, 8, 0, 0]}
-            name="Total Count"
+            name="Fraud Count"
           />
         </BarChart>
       </ResponsiveContainer>

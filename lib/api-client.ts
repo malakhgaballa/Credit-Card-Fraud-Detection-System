@@ -1,12 +1,25 @@
 // lib/api-client.ts
+import {
+  generateMockDashboardStats,
+  generateMockTrendData,
+  generateMockCategoryRiskData,
+  generateMockTransactionHistory,
+  generateMockAlerts,
+  generateMockAuditTrail,
+  generateMockSystemMetrics,
+} from './mock-data';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA !== 'false';
 
 export class APIClient {
   private baseUrl: string;
   private token: string | null = null;
+  private useMockData: boolean;
 
-  constructor(baseUrl: string = API_BASE_URL) {
+  constructor(baseUrl: string = API_BASE_URL, useMockData: boolean = USE_MOCK_DATA) {
     this.baseUrl = baseUrl;
+    this.useMockData = useMockData;
   }
 
   setToken(token: string | null) {
@@ -47,9 +60,39 @@ export class APIClient {
 
       return response.json();
     } catch (error) {
-      console.error(`API request failed: ${endpoint}`, error);
+      console.warn(`[v0] API request failed: ${endpoint}, using mock data`);
+      if (this.useMockData) {
+        // Simulate network delay for realistic feel
+        await new Promise(resolve => setTimeout(resolve, 300));
+        return this.getMockData<T>(endpoint);
+      }
       throw error;
     }
+  }
+
+  private getMockData<T>(endpoint: string): T {
+    if (endpoint.includes('/dashboard/stats')) {
+      return generateMockDashboardStats() as T;
+    }
+    if (endpoint.includes('/dashboard/trends')) {
+      return { data: generateMockTrendData() } as T;
+    }
+    if (endpoint.includes('/dashboard/category-risk')) {
+      return { data: generateMockCategoryRiskData() } as T;
+    }
+    if (endpoint.includes('/transactions/history')) {
+      return { transactions: generateMockTransactionHistory() } as T;
+    }
+    if (endpoint.includes('/alerts')) {
+      return { alerts: generateMockAlerts() } as T;
+    }
+    if (endpoint.includes('/audit-trail')) {
+      return { audit_logs: generateMockAuditTrail() } as T;
+    }
+    if (endpoint.includes('/metrics')) {
+      return generateMockSystemMetrics() as T;
+    }
+    return {} as T;
   }
 
   // Transaction endpoints

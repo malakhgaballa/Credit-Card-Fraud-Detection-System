@@ -10,21 +10,33 @@ interface TrendDataPoint {
   fraudulent: number;
 }
 
-export function FraudTrendChart({ data }: { data: TrendDataPoint[] }) {
-  // Generate mock data if not provided
-  const chartData = data || [
-    { date: 'Mon', legitimate: 85, suspicious: 12, fraudulent: 3 },
-    { date: 'Tue', legitimate: 92, suspicious: 15, fraudulent: 2 },
-    { date: 'Wed', legitimate: 78, suspicious: 18, fraudulent: 4 },
-    { date: 'Thu', legitimate: 88, suspicious: 14, fraudulent: 3 },
-    { date: 'Fri', legitimate: 95, suspicious: 16, fraudulent: 5 },
-    { date: 'Sat', legitimate: 72, suspicious: 11, fraudulent: 2 },
-    { date: 'Sun', legitimate: 68, suspicious: 10, fraudulent: 1 },
-  ];
+export function FraudTrendChart({ data }: { data: any[] | null }) {
+  // Transform incoming data format to chart format
+  let chartData = [];
+  
+  if (data && Array.isArray(data) && data.length > 0) {
+    chartData = data.map(point => ({
+      date: point.date || point.dateString,
+      transactions: point.transactions || 0,
+      fraud: point.fraud || 0,
+      detection_rate: parseFloat(point.detection_rate) || 0,
+    }));
+  } else {
+    // Fallback mock data
+    chartData = [
+      { date: 'Mon', transactions: 950, fraud: 28, detection_rate: 2.9 },
+      { date: 'Tue', transactions: 1020, fraud: 35, detection_rate: 3.4 },
+      { date: 'Wed', transactions: 890, fraud: 22, detection_rate: 2.5 },
+      { date: 'Thu', transactions: 980, fraud: 32, detection_rate: 3.3 },
+      { date: 'Fri', transactions: 1150, fraud: 48, detection_rate: 4.2 },
+      { date: 'Sat', transactions: 820, fraud: 18, detection_rate: 2.2 },
+      { date: 'Sun', transactions: 750, fraud: 15, detection_rate: 2.0 },
+    ];
+  }
 
   return (
     <div className="p-6 rounded-lg border border-border bg-card">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Fraud Detection Trend</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">Fraud Detection Trend (7 Days)</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -37,30 +49,21 @@ export function FraudTrendChart({ data }: { data: TrendDataPoint[] }) {
           <Legend />
           <Line 
             type="monotone" 
-            dataKey="legitimate" 
-            stroke="#22c55e" 
+            dataKey="transactions" 
+            stroke="#3b82f6" 
             strokeWidth={2}
-            dot={{ fill: '#22c55e', r: 4 }}
+            dot={{ fill: '#3b82f6', r: 4 }}
             activeDot={{ r: 6 }}
-            name="Legitimate"
+            name="Total Transactions"
           />
           <Line 
             type="monotone" 
-            dataKey="suspicious" 
-            stroke="#eab308" 
-            strokeWidth={2}
-            dot={{ fill: '#eab308', r: 4 }}
-            activeDot={{ r: 6 }}
-            name="Suspicious"
-          />
-          <Line 
-            type="monotone" 
-            dataKey="fraudulent" 
+            dataKey="fraud" 
             stroke="#ef4444" 
             strokeWidth={2}
             dot={{ fill: '#ef4444', r: 4 }}
             activeDot={{ r: 6 }}
-            name="Fraudulent"
+            name="Fraud Detected"
           />
         </LineChart>
       </ResponsiveContainer>

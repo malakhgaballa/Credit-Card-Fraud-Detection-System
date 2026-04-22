@@ -11,6 +11,9 @@ import { AlertTriangle, TrendingUp, BarChart3, Clock } from 'lucide-react';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
+  const [trendData, setTrendData] = useState<any>(null);
+  const [categoryData, setCategoryData] = useState<any>(null);
+  const [alerts, setAlerts] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState(7);
   const { getAuthToken } = useAuth();
@@ -21,18 +24,28 @@ export default function DashboardPage() {
       apiClient.setToken(token);
     }
 
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const data = await apiClient.getDashboardStats(timeRange);
-        setStats(data);
+        setLoading(true);
+        const [statsData, trends, categories, alertsData] = await Promise.all([
+          apiClient.getDashboardStats(timeRange),
+          apiClient.getDashboardTrends(timeRange),
+          apiClient.getCategoryRisk(),
+          apiClient.getAlerts({ limit: 3 }),
+        ]);
+
+        setStats(statsData);
+        setTrendData(trends?.data || []);
+        setCategoryData(categories?.data || []);
+        setAlerts(alertsData?.alerts || []);
       } catch (error) {
-        console.error('Failed to fetch dashboard stats:', error);
+        console.error('[v0] Failed to fetch dashboard data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchDashboardData();
   }, [timeRange, getAuthToken]);
 
   if (loading) {
@@ -78,8 +91,8 @@ export default function DashboardPage() {
 
       {/* Main Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <FraudTrendChart data={null} />
-        <RiskByCategoryChart data={null} />
+        <FraudTrendChart data={trendData} />
+        <RiskByCategoryChart data={categoryData} />
       </div>
 
       {/* Bottom Row - Summary Cards */}
@@ -129,35 +142,28 @@ export default function DashboardPage() {
         </div>
         
         <div className="space-y-3">
-          <div className="flex items-start justify-between p-4 rounded-lg bg-muted/50 border border-border">
-            <div>
-              <p className="font-medium text-foreground">High fraud probability detected</p>
-              <p className="text-sm text-muted-foreground mt-1">Wire transfer - $5,000 to unknown merchant</p>
+          {alerts && alerts.length > 0 ? (
+            alerts.map((alert: any) => (
+              <div key={alert.id} className="flex items-start justify-between p-4 rounded-lg bg-muted/50 border border-border">
+                <div>
+                  <p className="font-medium text-foreground">{alert.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{alert.alert_type.replace(/_/g, ' ').charAt(0).toUpperCase() + alert.alert_type.replace(/_/g, ' ').slice(1)}</p>
+                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  alert.priority === 'critical' ? 'bg-red-100 text-red-700' :
+                  alert.priority === 'high' ? 'bg-orange-100 text-orange-700' :
+                  alert.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                  'bg-blue-100 text-blue-700'
+                }`}>
+                  {alert.priority.charAt(0).toUpperCase() + alert.priority.slice(1)}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="p-4 text-center text-muted-foreground">
+              No active alerts
             </div>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-              Critical
-            </span>
-          </div>
-
-          <div className="flex items-start justify-between p-4 rounded-lg bg-muted/50 border border-border">
-            <div>
-              <p className="font-medium text-foreground">Geographic anomaly</p>
-              <p className="text-sm text-muted-foreground mt-1">Transaction 800km from customer location</p>
-            </div>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
-              High
-            </span>
-          </div>
-
-          <div className="flex items-start justify-between p-4 rounded-lg bg-muted/50 border border-border">
-            <div>
-              <p className="font-medium text-foreground">Unusual time pattern</p>
-              <p className="text-sm text-muted-foreground mt-1">Multiple transactions between 2-4 AM</p>
-            </div>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
-              Medium
-            </span>
-          </div>
+          )}
         </div>
 
         <button className="mt-4 w-full py-2 px-4 rounded-lg border border-border hover:bg-muted transition-colors text-foreground font-medium">
