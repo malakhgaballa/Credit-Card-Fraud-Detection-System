@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -8,15 +9,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Credit Card Fraud Detection System",
+  title: "FraudShield - Enterprise Fraud Detection",
   description:
-    "AI-powered credit card fraud detection using Random Forest machine learning algorithm. Analyze transactions in real-time to identify fraudulent activity.",
+    "Enterprise-grade fraud detection system for financial institutions. Real-time transaction analysis powered by advanced machine learning.",
   keywords: [
     "fraud detection",
     "credit card",
     "machine learning",
-    "random forest",
+    "transaction monitoring",
     "financial security",
+    "banking",
   ],
 };
 
@@ -37,7 +39,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background">
       <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

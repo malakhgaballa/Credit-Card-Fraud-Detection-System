@@ -1,0 +1,329 @@
+{
+  "product": {
+    "name": "FraudShield",
+    "version": "1.0.0",
+    "description": "Enterprise-grade fraud detection system for financial institutions",
+    "type": "SaaS",
+    "targetAudience": "Banks, Financial Institutions, Payment Processors"
+  },
+  "architecture": {
+    "frontend": {
+      "framework": "Next.js 16",
+      "language": "TypeScript",
+      "runtime": "Node.js 18+",
+      "port": 3000,
+      "components": [
+        "Dashboard with real-time KPIs",
+        "Transaction analysis interface",
+        "Transaction history with filtering",
+        "Alerts management system",
+        "Audit trail viewer",
+        "Admin panel",
+        "SSO authentication"
+      ],
+      "styling": "Tailwind CSS 4",
+      "charts": "Recharts"
+    },
+    "backend": {
+      "framework": "FastAPI",
+      "language": "Python 3.10+",
+      "port": 8000,
+      "components": [
+        "Transaction analysis API",
+        "Dashboard KPI calculations",
+        "Alert generation and management",
+        "Audit logging",
+        "User management",
+        "Batch processing",
+        "ML model integration"
+      ],
+      "mlModel": {
+        "type": "Random Forest Classifier",
+        "features": 64,
+        "estimators": 100,
+        "inputFormat": "Transaction features (amount, customer profile, merchant info, location)",
+        "output": "Fraud probability (0-1 confidence score)"
+      }
+    },
+    "database": {
+      "primary": "PostgreSQL 14+",
+      "cache": "Redis 6+",
+      "tables": [
+        "users (role-based access control)",
+        "transactions (fraud analysis results)",
+        "alerts (fraud detection alerts)",
+        "audit_logs (immutable activity trail)",
+        "batch_jobs (async processing)",
+        "system_metrics (monitoring data)"
+      ]
+    }
+  },
+  "authentication": {
+    "type": "SSO Only",
+    "providers": [
+      "Okta",
+      "Azure Active Directory",
+      "Keycloak"
+    ],
+    "features": [
+      "OIDC/SAML integration",
+      "Role-based access control (RBAC)",
+      "MFA support via SSO provider",
+      "Session management with Redis",
+      "Automatic token refresh"
+    ],
+    "roles": [
+      {
+        "name": "admin",
+        "permissions": [
+          "Analyze transactions",
+          "View all reports",
+          "Manage users",
+          "Configure system",
+          "View audit logs"
+        ]
+      },
+      {
+        "name": "analyst",
+        "permissions": [
+          "Analyze transactions",
+          "View dashboard",
+          "Manage alerts",
+          "Review history",
+          "Export data"
+        ]
+      },
+      {
+        "name": "viewer",
+        "permissions": [
+          "View dashboard",
+          "View history",
+          "View reports"
+        ]
+      }
+    ]
+  },
+  "features": {
+    "phase1": {
+      "name": "Backend Infrastructure",
+      "status": "complete",
+      "components": [
+        "FastAPI server setup",
+        "PostgreSQL database models",
+        "Redis integration",
+        "ML model loading and inference",
+        "Transaction analysis engine",
+        "Audit logging system"
+      ]
+    },
+    "phase2": {
+      "name": "Authentication & Navigation",
+      "status": "complete",
+      "components": [
+        "SSO login component",
+        "Auth context with JWT handling",
+        "Protected routes",
+        "Role-based navigation",
+        "Sidebar navigation",
+        "API client with token management"
+      ]
+    },
+    "phase3": {
+      "name": "Dashboard & Real-time KPIs",
+      "status": "complete",
+      "components": [
+        "KPI cards (4 key metrics)",
+        "Fraud trend line chart",
+        "Risk by category bar chart",
+        "Time range selector (7/30/90 days)",
+        "Recent alerts display",
+        "Amount tracking (fraudulent vs legitimate)"
+      ]
+    },
+    "phase4": {
+      "name": "Transaction History & Filtering",
+      "status": "complete",
+      "components": [
+        "Advanced filter panel",
+        "Transaction table with sorting",
+        "Risk score visualization",
+        "Transaction detail modal",
+        "CSV export functionality",
+        "Date range filtering"
+      ]
+    },
+    "phase5": {
+      "name": "Alerts System & Notifications",
+      "status": "ready",
+      "components": [
+        "Alert generation engine",
+        "Alert priority levels",
+        "Real-time notifications",
+        "Alert resolution workflow",
+        "Alert history tracking",
+        "Email/SMS notifications"
+      ]
+    },
+    "phase6": {
+      "name": "Audit Trail & Admin Panel",
+      "status": "ready",
+      "components": [
+        "Immutable audit logs",
+        "User activity tracking",
+        "System configuration panel",
+        "User management interface",
+        "Security settings",
+        "System health monitoring"
+      ]
+    },
+    "phase7": {
+      "name": "Integration APIs & Batch Processing",
+      "status": "ready",
+      "components": [
+        "REST API for third-party integration",
+        "Batch CSV processing",
+        "Async job queuing",
+        "Results export",
+        "Webhook support",
+        "Rate limiting"
+      ]
+    }
+  },
+  "security": {
+    "authentication": {
+      "method": "OAuth 2.0 / OIDC",
+      "mfa": "Enforced via SSO provider",
+      "tokenExpiry": "60 minutes",
+      "refreshToken": "Implemented with rotation"
+    },
+    "encryption": {
+      "transport": "TLS 1.3",
+      "atRest": "AES-256 for PII",
+      "database": "SSL connections required"
+    },
+    "dataProtection": {
+      "piiEncryption": true,
+      "auditLogging": true,
+      "dataRetention": "Configurable per compliance",
+      "gdprCompliant": true,
+      "pcidssReady": true
+    },
+    "apiSecurity": {
+      "rateLimit": "1000 requests/minute per user",
+      "cors": "Configurable by domain",
+      "inputValidation": "Pydantic schemas",
+      "sqlInjection": "Parameterized queries"
+    }
+  },
+  "performance": {
+    "responseTime": {
+      "singleAnalysis": "<200ms",
+      "dashboardLoad": "<500ms",
+      "historyQuery": "<1000ms"
+    },
+    "throughput": {
+      "transactionsPerSecond": "1000+",
+      "batchSize": "50,000 transactions"
+    },
+    "infrastructure": {
+      "scalability": "Horizontal (Kubernetes)",
+      "uptime": "99.9% SLA",
+      "autoScaling": true,
+      "loadBalancing": "Enabled"
+    }
+  },
+  "deployment": {
+    "containerization": "Docker & Docker Compose",
+    "orchestration": "Kubernetes recommended",
+    "cicd": "GitHub Actions / GitLab CI",
+    "environments": [
+      "Development (local)",
+      "Staging (pre-production)",
+      "Production (live)"
+    ],
+    "backupStrategy": "Daily automated backups to S3",
+    "disasterRecovery": "RPO: 1 hour, RTO: 15 minutes"
+  },
+  "monitoring": {
+    "metrics": "Prometheus",
+    "visualization": "Grafana",
+    "logging": "ELK Stack",
+    "alerting": {
+      "thresholds": [
+        "API response time > 2 seconds",
+        "Error rate > 1%",
+        "Database connection failures",
+        "Unusual fraud detection pattern"
+      ]
+    }
+  },
+  "compliance": {
+    "standards": [
+      "PCI-DSS (Payment Card Industry)",
+      "GDPR (EU data protection)",
+      "SOX (Financial controls)",
+      "AML/KYC (Anti-money laundering)"
+    ],
+    "features": [
+      "Immutable audit trails",
+      "Data encryption",
+      "Access controls",
+      "Regulatory reporting",
+      "Data retention policies"
+    ]
+  },
+  "apiEndpoints": {
+    "transactions": {
+      "POST /api/v1/transactions/analyze": "Analyze single transaction",
+      "GET /api/v1/transactions/history": "Retrieve transaction history",
+      "GET /api/v1/transactions/{id}": "Get transaction details"
+    },
+    "dashboard": {
+      "GET /api/v1/dashboard/stats": "Get KPI statistics",
+      "GET /api/v1/dashboard/trends": "Get trend data",
+      "GET /api/v1/dashboard/category-risk": "Get category risk breakdown"
+    },
+    "alerts": {
+      "GET /api/v1/alerts": "List alerts",
+      "PATCH /api/v1/alerts/{id}": "Update alert status"
+    },
+    "auditTrail": {
+      "GET /api/v1/audit-trail": "Get audit logs"
+    },
+    "batch": {
+      "POST /api/v1/batch/submit": "Submit batch job",
+      "GET /api/v1/batch/status/{jobId}": "Check job status",
+      "GET /api/v1/batch/result/{jobId}": "Get results"
+    }
+  },
+  "dependencies": {
+    "frontend": [
+      "next@latest",
+      "react@19",
+      "typescript",
+      "tailwindcss@4",
+      "recharts",
+      "lucide-react"
+    ],
+    "backend": [
+      "fastapi",
+      "uvicorn",
+      "sqlalchemy",
+      "psycopg2",
+      "redis",
+      "scikit-learn",
+      "pandas",
+      "pydantic"
+    ]
+  },
+  "roadmap": {
+    "current": "1.0.0 - MVP Launch",
+    "future": [
+      "2.0.0 - GraphQL API",
+      "2.1.0 - Mobile app",
+      "3.0.0 - AI-powered anomaly detection",
+      "3.1.0 - Blockchain integration",
+      "4.0.0 - Federated learning for cross-institution insights"
+    ]
+  }
+}
